@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "823637074857",
+    "project_id": "hemsirem-a5ee4",
+    "storage_bucket": "hemsirem-a5ee4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823637074857:android:3e5d4145f3ba1fa5f51ab8",
+        "android_client_info": {
+          "package_name": "byneo.games.hemsirem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "823637074857-9ojl0hpf951ipvv749eudkc1onqnv37p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoFhmav6kKhjlD4Fnl4mARd_8e4mDSL3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "823637074857-9ojl0hpf951ipvv749eudkc1onqnv37p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
