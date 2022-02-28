@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   late GlobalKey formKey;
   List<int> sifre = [];
   bool _isVisible = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -40,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
     _passwordEditingController.dispose();
     _password2EditingController.dispose();
     _telefonEditingController.dispose();
-    formKey.currentState!.dispose();
+    formKey.currentState?.dispose();
     super.dispose();
   }
 
@@ -65,12 +66,18 @@ class _LoginPageState extends State<LoginPage> {
           child: GetBuilder(
             init: Get.put(KayitController()),
             builder: (Object kayitController) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              return Stack(
                 children: [
-                  buildUstYazi(kayitController),
-                  buildKayitGirisEkrani(kayitController),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildUstYazi(kayitController),
+                      buildKayitGirisEkrani(kayitController),
+                    ],
+                  ),
+                  if (isLoading)
+                    const Center(child: CircularProgressIndicator()),
                 ],
               );
             },
@@ -151,35 +158,29 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Icons.vpn_key,
                 obscureText: _isVisible ? false : true,
                 suffixicon: InkWell(
-                  onTap: (){
-                    if(_isVisible){
+                  onTap: () {
+                    if (_isVisible) {
                       setState(() {
                         _isVisible = false;
                       });
-                    }else{
+                    } else {
                       setState(() {
                         _isVisible = false;
                       });
                       _isVisible = true;
                     }
                   },
-                  child: _isVisible ? Icon(Icons.remove_red_eye) : Icon(Icons.remove_red_eye_outlined),
+                  child: _isVisible
+                      ? const Icon(Icons.remove_red_eye)
+                      : const Icon(Icons.remove_red_eye_outlined),
                 ),
               ),
 
               /// Eğer kayıt olacaksa aşağıdaki 2 method çalışacak.
               KayitController.to.mySizeBoxKontol(),
               KayitController.to.myTextKontrol(),
-              const SizedBox(height: 20),
-              MyTextField(
-                textEditingController: _telefonEditingController,
-                textInputAction: TextInputAction.done,
-                textInputType:
-                    const TextInputType.numberWithOptions(signed: true),
-                hintText: "Telefon Numaranız",
-                icon: Icons.mobile_friendly,
-                obscureText: false,
-              ),
+              KayitController.to.mySizeBoxKontol(),
+              KayitController.to.myTelefonKontrol(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -196,19 +197,42 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.blue.shade800,
                   child: KayitController.to.myMaterialButonKontrol(),
                   onPressed: () {
-
-                      kayitController.kayitliMi == true ||
-                              _passwordEditingController.text ==
-                                  _password2EditingController.text
+                    if (_emailEditingController.text.isNotEmpty &&
+                        _passwordEditingController.text.isNotEmpty) {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      kayitController.kayitliMi == true
                           ? _authController.loginMethod(
                               _emailEditingController.text.toString(),
                               _passwordEditingController.text.toString(),
                             )
-                          : _authController.registerMethod(
+                          : _authController
+                              .registerMethod(
                               _emailEditingController.text.toString(),
                               _passwordEditingController.text.toString(),
-                            );
-
+                              _telefonEditingController.text.toString(),
+                            )
+                              .catchError((error) {
+                              if (error.toString().contains("wrong-password")) {
+                                Get.snackbar("Parola Hatası", "Yanlış Parola");
+                              }
+                              if (error.toString().contains("user-not-found")) {
+                                Get.snackbar(
+                                    "Kullanıcı Hatası", "Kullanıcı Yok");
+                              }
+                              if (error.toString().contains("invalid-email")) {
+                                Get.snackbar("Geçersiz Email",
+                                    "Yazmış olduğunuz email geçersiz");
+                              }
+                            }).whenComplete(() {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            });
+                    } else {
+                      Get.snackbar("Hata", "Lütfen kontrol ediniz");
+                    }
                   }),
             ],
           ),

@@ -5,7 +5,7 @@ import '../widgets/my_textfield.dart';
 
 class KayitController extends GetxController{
   static KayitController get to => Get.find();
-  late TextEditingController nameController, passwordController;
+  late TextEditingController nameController, passwordController, _telefonEditingController ;
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   late CollectionReference collectionReference;
 
@@ -14,6 +14,7 @@ class KayitController extends GetxController{
     super.onInit();
     nameController = TextEditingController();
     passwordController = TextEditingController();
+    _telefonEditingController = TextEditingController();
     collectionReference = firebaseFirestore.collection("insanlar");
   }
 
@@ -53,6 +54,20 @@ class KayitController extends GetxController{
       hintText: "Parola Tekrar",
       icon: Icons.vpn_key,
       obscureText: true,
+    );
+  }
+
+  myTelefonKontrol(){
+    return kayitliMi == true
+        ? const Center()
+        : MyTextField(
+      textEditingController: _telefonEditingController,
+      textInputAction: TextInputAction.done,
+      textInputType:
+      const TextInputType.numberWithOptions(signed: true),
+      hintText: "Telefon Numaranız",
+      icon: Icons.mobile_friendly,
+      obscureText: false,
     );
   }
 

@@ -52,16 +52,18 @@ class AuthController extends GetxController {
   }
 
   /// Kayıt Ol Methodu
-  void registerMethod(String email, String password) async {
+  Future<User?> registerMethod(String email, String password, String telefonNo) async {
     try {
-      await auth.createUserWithEmailAndPassword(
+      var user = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      await collectionReference.add({
-        "email": email,
-        "password": password,
+      await collectionReference.doc(user.user?.uid ?? "").set({
+        "email" : email,
+        "password" : password,
+        "telefonNo" : telefonNo
       }).whenComplete(() {
         Get.snackbar("Kayıt Başarılı", "Kullanıcı kaydı başarılı");
       });
+      return user.user;
     } catch (e) {
       Get.snackbar(
         "Kayıt Hakkında",
@@ -83,11 +85,12 @@ class AuthController extends GetxController {
   /// test@test.com
   /// test123test
   /// Giriş Yap Methodu
-  void loginMethod(String email, String password) async {
+  Future<User?> loginMethod(String email, String password) async {
     try {
-      await auth.signInWithEmailAndPassword(email: email, password: password);
+      var user = await auth.signInWithEmailAndPassword(email: email, password: password);
       Get.snackbar("Giriş Başarılı", "Sayın Kullanıcı hoşgeldiniz",
           duration: const Duration(seconds: 20));
+      return user.user;
     } catch (e) {
       Get.snackbar(
         "Giriş Hakkında",
